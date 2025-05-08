@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Accès refusé</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container text-center mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h3 class="mb-0">403 - Accès refusé</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="lead">
+                            Vous n'avez pas la permission d'accéder à cette page.
+                        </p>
+                        <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="Access Denied"
+                             class="img-fluid" style="max-width: 120px;"/>
+                        <div class="mt-4">
+                            <a href="/" class="btn btn-primary">
+                                Retour à l'accueil
+                            </a>
+                            <a th:href="@{/login}" class="btn btn-outline-secondary ms-2">
+                                Se connecter avec un autre compte
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

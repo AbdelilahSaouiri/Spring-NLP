@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div layout:fragment="content" class="container mt-5">
+    <h2 class="mb-4">Création d'un dataset <span class="text-muted">[ADMIN]</span></h2>
+    <div th:if="${message}" class="alert alert-info mt-3" th:text="${message}"></div>
+    <form th:action="@{/admin/dataset}" method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
+        <div class="mb-3">
+            <label for="file" class="form-label">Fichier :</label>
+            <div class="input-group">
+                <input type="file" class="form-control" id="file" name="file"
+                       required>
+                <button class="btn btn-outline-secondary" type="button">Upload</button>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Nom :</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="ex: NLI-AR" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="classes" class="form-label">Classes :</label>
+            <input type="text" class="form-control" id="classes" name="classes" placeholder="ex: N;E;C" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description :</label>
+            <textarea class="form-control" id="description" name="description" rows="4"
+                      placeholder="ex: Présentation du dataset..."></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <button type="reset" class="btn btn-secondary me-2">Annuler</button>
+            <button type="submit" class="btn btn-primary">Créer</button>
+        </div>
+    </form>
+
+</div>
+</body>
+</html>

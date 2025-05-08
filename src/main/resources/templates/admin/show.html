@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Datasets</title>
+</head>
+<body>
+
+<div layout:fragment="content" class="container mt-5">
+    <h4 class="mb-4">Liste des datasets</h4>
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+        <tr>
+            <th>Nom</th>
+            <th>% Avancement</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="dataset : ${dataSets}">
+         <td th:text="${dataset.nom}"></td>
+            <td>30%</td>
+            <td>
+                <a th:href="@{/admin/details(id=${dataset.id})}" class="btn btn-sm btn-info">Détails</a>
+                <a th:href="@{/admin/{id}/add-annotators(id=${dataset.id})}" class="btn btn-sm btn-primary">Ajouter Annotateurs</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
