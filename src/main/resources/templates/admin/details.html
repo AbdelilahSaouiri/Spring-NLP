@@ -81,6 +81,7 @@
           <td th:text="${annotateur.prenom}">Prénom</td>
           <td>
             <form th:action="@{/admin/dataset/annotateur(datasetId=${datasetId}, annotateurId=${annotateur.id})}" method="post">
+              <input type="hidden" name="page" th:value="${currentPage}" />
               <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
             </form>
           </td>

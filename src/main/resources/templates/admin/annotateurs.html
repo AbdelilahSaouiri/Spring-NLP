@@ -8,7 +8,41 @@
 </head>
 <body>
   <div layout:fragment="content">
+      <div class="container mt-5">
+          <div>
+              <div th:if="${saved}" class="alert alert-success d-block" th:text="${saved}"></div>
+          </div>
+          <div th:if="${updated}" class="alert alert-success mt-3" role="alert">
+              <i class="bi bi-check-circle-fill"></i>
+              <span th:text="${updated}"></span>
+          </div>
+          <div class="d-flex justify-content-between mb-3">
 
+              <h4>Liste des annotateurs </h4>
+              <a class="btn btn-success" th:href="@{/admin/annotateurs/new}">+ Ajouter</a>
+          </div>
+          <table class="table table-bordered">
+              <thead>
+              <tr>
+                  <th>Nom</th>
+                  <th>Prénom</th>
+                  <th>Actions</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="annotateur : ${annotateursList}">
+                  <td th:text="${annotateur.nom}">Nom</td>
+                  <td th:text="${annotateur.prenom}">Prénom</td>
+                  <td class="w-auto mx-auto">
+                      <a class="btn btn-primary btn-sm" th:href="@{/admin/annotateurs/update(id=${annotateur.id})}">Modifier</a>
+                      <form th:action="@{/admin/annotateurs/delete(id=${annotateur.id})}" method="post" class="d-inline">
+                          <button class="btn btn-danger btn-sm" type="submit">Supprimer</button>
+                      </form>
+                  </td>
+              </tr>
+              </tbody>
+          </table>
+      </div>
   </div>
 </body>
 </html>

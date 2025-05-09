@@ -1,14 +1,19 @@
 package net.ensah.project.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import net.ensah.project.dtos.AnnotateurDtoRequest;
 import net.ensah.project.dtos.DataSetDto;
+import net.ensah.project.dtos.UpdateAnnotateursDto;
 import net.ensah.project.entity.*;
+import net.ensah.project.enums.ROLE;
 import net.ensah.project.exception.InvalidFileException;
 import net.ensah.project.repository.*;
 import net.ensah.project.service.IDataSetService;
 import net.ensah.project.utils.CSV;
+import net.ensah.project.utils.PasswordGenerator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,13 +38,17 @@ public class IDataSetServiceImpl implements IDataSetService {
          private final CoupleTextRepository coupleTextRepo;
          private final TacheRepository taskRepo;
          private final AnnotateurRepository annotateurRepository;
+         private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
-    public IDataSetServiceImpl(DataSetRepository dataRepo, ClasseRepository classRepo, CoupleTextRepository coupleTextRepo, TacheRepository taskRepo,AnnotateurRepository annotateurRepository) {
+    public IDataSetServiceImpl(DataSetRepository dataRepo, ClasseRepository classRepo, CoupleTextRepository coupleTextRepo, TacheRepository taskRepo, AnnotateurRepository annotateurRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
             this.dataRepo = dataRepo;
             this.classRepo = classRepo;
             this.coupleTextRepo = coupleTextRepo;
             this.taskRepo = taskRepo;
             this.annotateurRepository = annotateurRepository;
+            this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -114,14 +122,16 @@ public class IDataSetServiceImpl implements IDataSetService {
         log.info("dataset {}", dataSet);
         List<Tache> tasks = dataSet.getTasks();
         log.info("tasks size: " + tasks.size());
-        List<Annotateur> byTaches = annotateurRepository.findByTachesIn(tasks);
+        List<Annotateur> byTaches = annotateurRepository.findByTachesIn(tasks).stream().filter(
+                an->!an.isEnabled()
+        ).collect(Collectors.toList());
         log.info("byTaches size: " + byTaches.size());
         return byTaches;
     }
 
     @Override
     public List<Annotateur> getAllAnnotateurs() {
-           return annotateurRepository.findAll();
+           return annotateurRepository.findAll().stream().filter(an->!an.isEnabled()).collect(Collectors.toList());
     }
 
     @Override
@@ -158,11 +168,65 @@ public class IDataSetServiceImpl implements IDataSetService {
         Annotateur annotateur=annotateurRepository.findById(id).orElse(null);
         annotateur.setTaches(new ArrayList<>());
         annotateur.setAnnotations(null);
-        annotateur.setAccountNonExpired(true);
-        annotateur.setCredentialsNonExpired(true);
         annotateur.setEnabled(true);
-        annotateur.setAccountNonLocked(true);
         annotateurRepository.save(annotateur);
+    }
+
+    @Override
+    public String saveNewAnnotateur(AnnotateurDtoRequest request) {
+        String password= PasswordGenerator.generatePassword();
+          Role role=new Role(null,ROLE.ROLE_USER);
+          roleRepository.save(role);
+          Annotateur annotateur = new Annotateur();
+          annotateur.setTaches(new ArrayList<>());
+          annotateur.setAnnotations(new ArrayList<>());
+          annotateur.setPassword(passwordEncoder.encode(password));
+          annotateur.setRole(role);
+          annotateur.setLogin(request.login());
+          annotateur.setNom(request.nom());
+          annotateur.setPrenom(request.prenom());
+          annotateurRepository.save(annotateur);
+          return password;
+    }
+
+    @Override
+    public UpdateAnnotateursDto getAnnotateursById(Long id) {
+        Annotateur annotateur = annotateurRepository.findById(id).orElse(null);
+        return new UpdateAnnotateursDto(
+                annotateur.getNom(),
+                annotateur.getPrenom(),
+                annotateur.getLogin(),
+                null,
+                annotateur.isAccountNonExpired(),
+                annotateur.isAccountNonLocked(),
+                annotateur.isCredentialsNonExpired(),
+                annotateur.isEnabled()
+        );
+    }
+
+    @Override
+    public String updateAnnotateur(Long id, UpdateAnnotateursDto annotateur) {
+        String res="";
+       log.info("{}",annotateur.toString());
+        Annotateur saved = annotateurRepository.findById(id).orElse(null);
+        saved.setNom(annotateur.nom());
+        saved.setPrenom(annotateur.prenom());
+        saved.setLogin(annotateur.login());
+        if(!annotateur.password().isEmpty()){
+            saved.setPassword(passwordEncoder.encode(annotateur.password()));
+            res=annotateur.password();
+        }
+        saved.setEnabled(annotateur.enabled());
+        saved.setAccountNonExpired(annotateur.accountNonExpired());
+        saved.setAccountNonLocked(annotateur.accountNonLocked());
+        saved.setCredentialsNonExpired(annotateur.credentialsNonExpired());
+        annotateurRepository.save(saved);
+        return res;
+    }
+
+    @Override
+    public List<Annotateur> getAllAnnotateursWithoutFilter() {
+        return annotateurRepository.findAll();
     }
 
 

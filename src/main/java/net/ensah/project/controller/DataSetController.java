@@ -1,7 +1,9 @@
 package net.ensah.project.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import net.ensah.project.dtos.AnnotateurDtoRequest;
 import net.ensah.project.dtos.DataSetDto;
+import net.ensah.project.dtos.UpdateAnnotateursDto;
 import net.ensah.project.entity.Annotateur;
 import net.ensah.project.entity.CoupleText;
 import net.ensah.project.entity.DataSet;
@@ -10,8 +12,9 @@ import net.ensah.project.service.IDataSetService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -89,12 +92,81 @@ public class DataSetController {
         }
 
         @PostMapping("/dataset/annotateur")
-       public String supprimerAnnotateur(
-               @RequestParam(name="datasetId") Long dataSetId,
-               @RequestParam(name="annotateurId") Long id)
-        {
-            service.supprimerAnnotateur(dataSetId,id);
-            return "redirect:/admin/details?id=" + dataSetId + "&page=0&size=10";
+        public String supprimerAnnotateur(
+                @RequestParam("datasetId") Long dataSetId,
+                @RequestParam("annotateurId") Long id,
+                @RequestParam(value = "page", defaultValue = "0") int page
+        ) {
+            service.supprimerAnnotateur(dataSetId, id);
+            return "redirect:/admin/details?id=" + dataSetId + "&page=" + page + "&size=10";
+        }
+
+        @GetMapping("/annotateurs")
+        public String annotateurs(Model model) {
+            List<Annotateur> allAnnotateurs = service.getAllAnnotateursWithoutFilter();
+            model.addAttribute("annotateursList", allAnnotateurs);
+            return "admin/annotateurs";
+        }
+
+
+
+        @GetMapping("/annotateurs/new")
+        public String newAnnotateur (Model model) {
+           model.addAttribute("annotateur", new AnnotateurDtoRequest("","",""));
+           return "admin/new-annotateur";
+        }
+
+        @PostMapping("/annotateurs/save")
+        public String addAnnotateur (@ModelAttribute(name = "annotateur") AnnotateurDtoRequest request,
+                                     BindingResult bindingResult,
+                                     RedirectAttributes redirectAttributes,
+                                     Model model){
+
+           if(bindingResult.hasErrors()){
+               model.addAttribute("annotateur",new AnnotateurDtoRequest("","",""));
+               return "admin/new-annotateur";
+           }
+            log.info(request.toString());
+            String password = service.saveNewAnnotateur(request);
+            redirectAttributes.addFlashAttribute("saved",
+                    "Annotateur ajouté avec succès. Mot de passe : " + password);
+            return "redirect:/admin/annotateurs";
+        }
+
+        @PostMapping("/annotateurs/delete")
+        public String deleteAnnotateur (@RequestParam(name="id")Long id){
+            log.info("deleteAnnotateur {}", id);
+            service.supprimerAnnotateur(0L,id);
+             return "redirect:/admin/annotateurs";
+        }
+
+
+        @GetMapping("/annotateurs/update")
+        public String formUpdate(@RequestParam(name="id") Long id ,Model model){
+            UpdateAnnotateursDto annotateur= service.getAnnotateursById(id);
+              model.addAttribute("id",id);
+              model.addAttribute("annotateur",annotateur);
+              log.info("avant {}",annotateur);
+               return "admin/update-annotateur";
+        }
+
+        @PostMapping("/annotateurs/update")
+        public String updateAnnotateur(@RequestParam(name = "id") Long id,
+                                       @ModelAttribute(name="annotateur") UpdateAnnotateursDto annotateur,
+                                        BindingResult bindingResult,
+                                        RedirectAttributes redirectAttributes,
+                                        Model model
+        ){
+             if(bindingResult.hasErrors()){
+                 return "admin/update-annotateur";
+             }
+            String password = service.updateAnnotateur(id, annotateur);
+             if(!password.isEmpty()){
+                 redirectAttributes.addFlashAttribute("updated","Annotateur modifié avec succès. (new password) "+password);
+             }else{
+                 redirectAttributes.addFlashAttribute("updated","Annotateur modifié avec succès.");
+             }
+            return "redirect:/admin/annotateurs";
         }
 
 }
