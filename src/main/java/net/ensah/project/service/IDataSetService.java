@@ -1,6 +1,7 @@
 package net.ensah.project.service;
 
 import net.ensah.project.dtos.DataSetDto;
+import net.ensah.project.entity.Annotateur;
 import net.ensah.project.entity.CoupleText;
 import net.ensah.project.entity.DataSet;
 import org.springframework.data.domain.Page;
@@ -15,4 +16,12 @@ public interface IDataSetService {
      List<DataSet> getAllDataSet();
     Page<CoupleText> getDetails(Long id, int page, int size);
     DataSet getDataSetById(Long id);
+
+    List<Annotateur> getAnnotateursByDataSetId(Long id);
+
+    List<Annotateur> getAllAnnotateurs();
+
+    void affecterAnnotateursToDataset(List<Long> ids, Long dataSetId);
+
+    void supprimerAnnotateur(Long dataSetId, Long id);
 }

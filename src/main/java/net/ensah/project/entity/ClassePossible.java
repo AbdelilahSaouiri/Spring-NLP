@@ -12,7 +12,6 @@ public class ClassePossible {
     @ManyToOne(fetch = FetchType.LAZY)
     private DataSet dataset;
     private String textClasses;
-
     @Override
     public String toString() {
         return textClasses ;

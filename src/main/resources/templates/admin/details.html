@@ -7,65 +7,90 @@
     <title>Details de DataSet</title>
 </head>
 <body>
-<div  layout:fragment="content" class="container mt-4">
+<div layout:fragment="content" class="container mt-4">
   <h4 class="mb-2">Affichage des détails du dataset</h4>
+  <!-- Informations sur le dataset -->
   <div class="mb-3">
     <strong>Taille :</strong> <span th:text="${data.nbrlignes}"></span> couples
   </div>
-
   <div class="mb-3">
     <strong>Nom dataset :</strong> <span th:text="${data.nom}">NLT-FR</span>
   </div>
-
   <div class="mb-3">
-    <strong>% d'avancement :</strong> 30%</span>
+    <strong>% d'avancement :</strong> 30%
   </div>
-
   <div class="mb-3">
     <strong>Description :</strong> <span th:text="${data.description}"></span>
   </div>
-
-
-  <div class="mb-3">
-    <ul>
+  <div class="mb-3" >
+    <strong>Classes : </strong>
+    <ul >
       <li th:each="classe : ${data.classes}" th:text="${classe}">Classes</li>
     </ul>
   </div>
 
-  <h4 class="mt-3">Liste des couples</h4>
-  <table class="table">
-    <thead>
-    <tr>
-      <th>Texte 1</th>
-      <th>Texte 2</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="couple : ${couplesPage}">
-      <td th:text="${couple.text1}">Texte 1</td>
-      <td th:text="${couple.text2}">Texte 2</td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="row">
+    <div class="col-md-8">
+      <h4 class="mt-3">Liste des couples</h4>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Texte 1</th>
+          <th>Texte 2</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="couple : ${couplesPage}">
+          <td th:text="${couple.text1}">Texte 1</td>
+          <td th:text="${couple.text2}">Texte 2</td>
+        </tr>
+        </tbody>
+      </table>
 
-  <nav th:if="${totalPages > 1}">
-    <ul class="pagination">
-      <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-        <a class="page-link" th:href="@{/admin/details(id=${datasetId}, page=${currentPage - 1}, size=${couplesPage.size()})}">Précédent</a>
-      </li>
-      <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-          th:classappend="${i == currentPage} ? 'active'">
-        <a class="page-link" th:href="@{/admin/details(id=${datasetId}, page=${i}, size=${couplesPage.size()})}" th:text="${i + 1}">1</a>
-      </li>
-      <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-        <a class="page-link" th:href="@{/admin/details(id=${datasetId}, page=${currentPage + 1}, size=${couplesPage.size()})}">Suivant</a>
-      </li>
-    </ul>
-  </nav>
+      <nav th:if="${totalPages > 1}">
+        <ul class="pagination">
+          <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+            <a class="page-link" th:href="@{/admin/details(id=${datasetId}, page=${currentPage - 1}, size=${couplesPage.size()})}">Précédent</a>
+          </li>
+          <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+              th:classappend="${i == currentPage} ? 'active'">
+            <a class="page-link" th:href="@{/admin/details(id=${datasetId}, page=${i}, size=${couplesPage.size()})}" th:text="${i + 1}">1</a>
+          </li>
+          <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+            <a class="page-link" th:href="@{/admin/details(id=${datasetId}, page=${currentPage + 1}, size=${couplesPage.size()})}">Suivant</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
 
-
-
+    <div class="col-md-4">
+      <h4 class="mt-3">Annotateurs affectés</h4>
+      <table class="table">
+        <thead>
+        <tr>
+          <th>Id</th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="annotateur : ${annotateurs}">
+          <td th:text="${annotateur.id}">1</td>
+          <td th:text="${annotateur.nom}">Nom</td>
+          <td th:text="${annotateur.prenom}">Prénom</td>
+          <td>
+            <form th:action="@{/admin/dataset/annotateur(datasetId=${datasetId}, annotateurId=${annotateur.id})}" method="post">
+              <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
+
 
 </body>
 </html>

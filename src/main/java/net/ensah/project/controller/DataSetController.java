@@ -2,6 +2,7 @@ package net.ensah.project.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import net.ensah.project.dtos.DataSetDto;
+import net.ensah.project.entity.Annotateur;
 import net.ensah.project.entity.CoupleText;
 import net.ensah.project.entity.DataSet;
 import net.ensah.project.exception.InvalidFileException;
@@ -58,6 +59,8 @@ public class DataSetController {
                                @RequestParam(name="size",defaultValue = "10") int size,
                                Model model) {
             Page<CoupleText> pg = service.getDetails(id, page, size);
+            List<Annotateur> annotateurs = service.getAnnotateursByDataSetId(id);
+            model.addAttribute("annotateurs", annotateurs);
             model.addAttribute("data", service.getDataSetById(id));
             model.addAttribute("couplesPage", pg.getContent());
             model.addAttribute("currentPage", page);
@@ -66,10 +69,32 @@ public class DataSetController {
             return "/admin/details";
         }
 
-        @GetMapping("/annotateurs")
-        public String annotateurs (Model model) {
-           return "admin/annotateurs";
+
+        @GetMapping("/add-annotators")
+        public String addAnnotateur (@RequestParam(name = "id")Long id ,Model model) {
+            List<Annotateur> allAnnotateurs = service.getAllAnnotateurs();
+            model.addAttribute("annotateurs", allAnnotateurs);
+            model.addAttribute("dataSetId", id);
+            return "admin/affecter-annotateur";
         }
 
+        @PostMapping("/affecter-annotateurs")
+       public String affecterAnnotateurToDataset(
+               @RequestParam("ids") List<Long> ids,
+                @RequestParam("dataId") Long dataSetId){
+              log.info("dataset id {}",dataSetId);
+              log.info("ids {}",ids);
+              service.affecterAnnotateursToDataset(ids,dataSetId);
+             return "redirect:/home";
+        }
+
+        @PostMapping("/dataset/annotateur")
+       public String supprimerAnnotateur(
+               @RequestParam(name="datasetId") Long dataSetId,
+               @RequestParam(name="annotateurId") Long id)
+        {
+            service.supprimerAnnotateur(dataSetId,id);
+            return "redirect:/admin/details?id=" + dataSetId + "&page=0&size=10";
+        }
 
 }

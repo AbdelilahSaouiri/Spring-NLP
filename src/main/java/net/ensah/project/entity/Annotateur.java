@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor @NoArgsConstructor  @Getter @Setter
 public class Annotateur extends Utilisateur {
-    @OneToMany
+    @OneToMany(mappedBy = "annotateur")
      private List<Tache>  taches ;
     @OneToMany
     private List<Annotation> annotations;

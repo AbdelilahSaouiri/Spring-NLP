@@ -15,8 +15,8 @@ public class CoupleText {
     private Long id;
     private String text1;
     private String text2;
-    @ManyToMany
-    private List<Tache>  tasks;
+    @ManyToMany(mappedBy = "couples")
+    private List<Tache> tasks;
     @ManyToOne
     private DataSet dataSet;
    @OneToMany

@@ -40,7 +40,7 @@ public class Application {
             ann1.setNom("Annotateur1");
             ann1.setPrenom("Alice");
             ann1.setLogin("alice");
-            ann1.setPassword(passwordEncoder.encode("alice123"));
+            ann1.setPassword(passwordEncoder.encode("1234"));
             ann1.setRole(user);
             ann1.setTaches(List.of());
             ann1.setAnnotations(List.of());
@@ -50,7 +50,7 @@ public class Application {
             ann2.setNom("Annotateur2");
             ann2.setPrenom("Bob");
             ann2.setLogin("bob");
-           // ann2.setPassword(passwordEncoder.encode("bob123"));
+            ann2.setPassword(passwordEncoder.encode("1234"));
             ann2.setRole(user);
             ann2.setTaches(List.of());
             ann2.setAnnotations(List.of());

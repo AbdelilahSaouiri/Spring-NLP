@@ -16,8 +16,8 @@ public abstract class Utilisateur {
     private String password;
     @ManyToOne(fetch = FetchType.EAGER)
     private Role role;
-    private boolean accountNonExpired = true;
-    private boolean accountNonLocked= true;
-    private boolean credentialsNonExpired= true;
-    private boolean enabled= true;
+    private boolean accountNonExpired = false;
+    private boolean accountNonLocked= false;
+    private boolean credentialsNonExpired= false;
+    private boolean enabled= false;
 }

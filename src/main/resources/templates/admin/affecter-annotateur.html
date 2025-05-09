@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Annotateurs</title>
+</head>
+<body>
+<div layout:fragment="content" class="container mt-5">
+    <h4 class="mb-3">Liste des Annotateurs</h4>
+
+    <form th:action="@{/admin/affecter-annotateurs}" method="post">
+        <input type="hidden" name="dataId" th:value="${dataSetId}" />
+    <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Annotateurs</th>
+                <th>Sélection</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="annotateur : ${annotateurs}">
+                <td th:text="${annotateur.prenom + ' ' + annotateur.nom}">Nom Prénom</td>
+                <td>
+                    <label>
+                        <input type="checkbox" name="ids" th:value="${annotateur.id}"/>
+                    </label>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Valider</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

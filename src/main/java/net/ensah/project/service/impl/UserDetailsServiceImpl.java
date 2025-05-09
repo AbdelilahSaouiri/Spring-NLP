@@ -27,7 +27,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user.isPresent()) {
             return User.withUsername(user.get().getLogin())
                     .password(user.get().getPassword())
-                    .authorities(user.get().getRole().toString()).build();
+                    .authorities(user.get().getRole().toString())
+                    .accountExpired(user.get().isAccountNonExpired())
+                    .accountLocked(user.get().isAccountNonLocked())
+                    .credentialsExpired(user.get().isCredentialsNonExpired())
+                    .disabled(user.get().isEnabled())
+                    .build();
         } else {
             throw new UsernameNotFoundException(username);
         }
