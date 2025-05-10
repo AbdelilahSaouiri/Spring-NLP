@@ -166,9 +166,10 @@ public class IDataSetServiceImpl implements IDataSetService {
     @Override
     public void supprimerAnnotateur(Long dataSetId, Long id) {
         Annotateur annotateur=annotateurRepository.findById(id).orElse(null);
-        annotateur.setTaches(new ArrayList<>());
-        annotateur.setAnnotations(null);
-        annotateur.setEnabled(true);
+        annotateur.getTaches().remove(annotateur);
+        Tache task = taskRepo.findByAnnotateur(annotateur);
+        task.setAnnotateur(null);
+        taskRepo.save(task);
         annotateurRepository.save(annotateur);
     }
 

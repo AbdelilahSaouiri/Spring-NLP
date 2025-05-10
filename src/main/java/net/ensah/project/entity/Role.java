@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import net.ensah.project.enums.ROLE;
 
-@Entity @AllArgsConstructor @NoArgsConstructor  @Getter @Setter
+@Entity @AllArgsConstructor @NoArgsConstructor  @Getter @Setter @ToString
 public class Role {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

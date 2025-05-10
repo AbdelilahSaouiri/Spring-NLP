@@ -27,7 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user.isPresent()) {
             return User.withUsername(user.get().getLogin())
                     .password(user.get().getPassword())
-                    .authorities(user.get().getRole().toString())
+                    .authorities(user.get().getRole().getNom().toString())
                     .accountExpired(user.get().isAccountNonExpired())
                     .accountLocked(user.get().isAccountNonLocked())
                     .credentialsExpired(user.get().isCredentialsNonExpired())

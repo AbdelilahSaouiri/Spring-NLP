@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Tasks</title>
+</head>
+<body>
+    <section layout:fragment="content">
+        <div class="container">
+            <h2 class="mb-4">Liste des Tâches</h2>
+            <table class="table table-bordered table-hover text-center align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Nom dataset</th>
+                    <th>Date limite</th>
+                    <th>% Avancement</th>
+                    <th>Taille</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="task : ${tasks}">
+                    <td th:text="${task.id}"></td>
+                    <td th:text="${task.dataset.nom}"></td>
+                    <td th:text="${task.date}"></td>
+                    <td>75%</td>
+                    <td th:text="${task.dataset.nbrlignes}"></td>
+                    <td><a th:href="@{/annotation/work}" class="btn btn-sm btn-primary">Travailler</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</body>
+</html>
