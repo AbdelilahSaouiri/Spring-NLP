@@ -14,14 +14,14 @@
         <thead class="table-dark">
         <tr>
             <th>Nom</th>
-            <th>% Avancement</th>
+            <th>Avancement</th>
             <th>Actions</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="dataset : ${dataSets}">
+        <tr th:each="dataset,iterStat : ${dataSets}" >
          <td th:text="${dataset.nom}"></td>
-            <td>30%</td>
+            <td th:text="${#numbers.formatDecimal(avancements[iterStat.index], 1, 2)} + '%'">30</td>
             <td>
                 <a th:href="@{/admin/details(id=${dataset.id})}" class="btn btn-sm btn-info">Détails</a>
                 <a th:href="@{/admin/add-annotators(id=${dataset.id})}" class="btn btn-sm btn-primary">Ajouter Annotateurs</a>

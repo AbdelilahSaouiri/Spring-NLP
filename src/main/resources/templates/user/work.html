@@ -42,19 +42,16 @@
             </div>
         </div>
 
-        <!-- Formulaire d’annotation -->
         <form th:if="${!alreadyAnnotated}"
               id="validationForm"
               method="post"
               th:action="@{/annotation/task/validate}"
               style="margin-top:20px;">
 
-            <!-- Hidden inputs -->
             <input type="hidden" name="taskId"   th:value="${task.id}"/>
             <input type="hidden" name="coupleId"  th:value="${couple.id}"/>
             <input type="hidden" name="index"     th:value="${index}"/>
 
-            <!-- Radios Similarité -->
             <div>
                 <input type="radio" id="notSimilar"
                        name="similarity" value="NOT_SIMILAR"/>
@@ -65,7 +62,6 @@
                 <label for="similar">Similaire</label>
             </div>
 
-            <!-- Boutons -->
             <div style="margin-top:20px;">
                 <button type="submit" class="btn btn-primary">Valider</button>
 

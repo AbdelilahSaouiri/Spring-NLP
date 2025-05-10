@@ -18,6 +18,7 @@ public interface IDataSetService {
 
      List<DataSet> getAllDataSet();
 
+
     Page<CoupleText> getDetails(Long id, int page, int size);
 
     DataSet getDataSetById(Long id);
@@ -37,4 +38,9 @@ public interface IDataSetService {
     String updateAnnotateur(Long id, UpdateAnnotateursDto annotateur);
 
     List<Annotateur> getAllAnnotateursWithoutFilter();
+
+    double calculateAvancement(DataSet dataSet);
+
+
+    List<Double> calculateAvancementforEachDataSet(List<DataSet> all);
 }

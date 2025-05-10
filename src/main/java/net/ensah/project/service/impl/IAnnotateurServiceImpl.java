@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -19,19 +20,17 @@ public class IAnnotateurServiceImpl implements IAnnotateurService {
     private final AnnotateurRepository repository;
     private final TacheRepository taskRepo;
     private final CoupleTextRepository coupleTextRepository;
-    private final DataSetRepository dataSetRepository;
     private final AnnotationRepository annotationRepository;
-    private final AnnotateurRepository annotateurRepository;
 
-    public IAnnotateurServiceImpl(AnnotateurRepository repository, TacheRepository taskRepo, CoupleTextRepository coupleTextRepository, DataSetRepository dataSetRepository, AnnotationRepository annotationRepository, AnnotateurRepository annotateurRepository, AnnotateurRepository annotateurRepository1) {
+    public IAnnotateurServiceImpl(AnnotateurRepository repository,
+                                  TacheRepository taskRepo,
+                                  CoupleTextRepository coupleTextRepository,
+                                  AnnotationRepository annotationRepository) {
         this.repository = repository;
         this.taskRepo = taskRepo;
         this.coupleTextRepository = coupleTextRepository;
-        this.dataSetRepository = dataSetRepository;
         this.annotationRepository = annotationRepository;
-        this.annotateurRepository = annotateurRepository1;
     }
-
 
     @Override
     public List<Tache> getTasks(Principal principal) {
@@ -46,11 +45,7 @@ public class IAnnotateurServiceImpl implements IAnnotateurService {
     }
 
     @Override
-    public void validate(Long taskId,
-                         long   coupleId,
-                         String similarity,
-                          int  index,
-                         Principal principal) {
+    public void validate(Long taskId, long   coupleId, String similarity, int  index, Principal principal) {
 
         Annotateur annotateur = repository.findByLogin(principal.getName());
         CoupleText couple    = coupleTextRepository.findById(coupleId)
@@ -59,8 +54,7 @@ public class IAnnotateurServiceImpl implements IAnnotateurService {
         boolean already = annotationRepository
                 .existsByAnnotateurLoginAndCoupleId(principal.getName(), coupleId);
         if (already) {
-
-            log.info("Couple {} déjà annoté par {}", coupleId, principal.getName());
+            log.warn("Couple {} déjà annoté par {}", coupleId, principal.getName());
             return;
         }
 
@@ -74,9 +68,7 @@ public class IAnnotateurServiceImpl implements IAnnotateurService {
         annotation.setAnnotateur(annotateur);
         annotation.setCouple(couple);
         annotation.setDate(LocalDate.now());
-
         annotationRepository.save(annotation);
-
         annotateur.getAnnotations().add(annotation);
         couple.getAnnotations().add(annotation);
         repository.save(annotateur);
@@ -89,5 +81,18 @@ public class IAnnotateurServiceImpl implements IAnnotateurService {
         return annotationRepository.existsByCoupleId(coupleId);
     }
 
+    @Override
+    public  List<Double> percent(Principal principal, List<Tache> tasks) {
+         List<Double>  lists=new ArrayList<>();
+        tasks.forEach(task -> {
+            int taille=task.getCouples().size();
+            long count = task.getCouples().stream().flatMap(t -> t.getAnnotations().stream()
+                    .filter(ann->ann.getAnnotateur()!=null &&
+                            ann.getAnnotateur().getLogin().equals(principal.getName()))).count();
+             double percent= taille==0 ? 0.0 : (double) count*100/taille;
+             lists.add(percent);
+        });
+       return lists;
+    }
 
 }

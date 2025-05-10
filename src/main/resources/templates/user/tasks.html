@@ -22,11 +22,11 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="task : ${tasks}">
+                <tr th:each="task, iter : ${tasks}">
                     <td th:text="${task.id}"></td>
                     <td th:text="${task.dataset.nom}"></td>
                     <td th:text="${task.date}"></td>
-                    <td>75%</td>
+                    <td th:text="${#numbers.formatDecimal(percent[iter.index], 1, 2)} + '%'"></td>
                     <td th:text="${task.dataset.nbrlignes}"></td>
                     <td><a th:href="@{/annotation/work(id=${task.id})}" class="btn btn-sm btn-primary">Travailler</a></td>
                 </tr>

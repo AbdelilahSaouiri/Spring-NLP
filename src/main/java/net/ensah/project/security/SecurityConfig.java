@@ -37,6 +37,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/annotation/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(fr -> fr

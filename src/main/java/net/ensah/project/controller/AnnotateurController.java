@@ -29,6 +29,8 @@ public class AnnotateurController {
     @GetMapping("/tasks")
     public String tasks(Model model, Principal principal) {
         List<Tache> tasks = service.getTasks(principal);
+        List<Double>  percent=service.percent(principal,tasks);
+        model.addAttribute("percent",percent);
         model.addAttribute("tasks", tasks);
         return "user/tasks";
     }

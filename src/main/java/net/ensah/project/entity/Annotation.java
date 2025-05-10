@@ -20,5 +20,6 @@ public class Annotation {
     private CoupleText couple;
     @ManyToOne
     private Annotateur annotateur;
+
     private LocalDate date;
 }

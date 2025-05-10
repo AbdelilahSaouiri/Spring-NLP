@@ -15,4 +15,6 @@ public interface IAnnotateurService {
 
 
     boolean existsByCoupleId(Long coupleId);
+
+    List<Double>  percent(Principal principal, List<Tache> tasks);
 }

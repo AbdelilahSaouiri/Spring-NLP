@@ -16,11 +16,6 @@ public class Tache {
     @ManyToOne(fetch = FetchType.LAZY)
     private DataSet dataset;
     @ManyToMany
-//    @JoinTable(
-//            name = "tache_couple_text",
-//            joinColumns = @JoinColumn(name = "tache_id"),
-//            inverseJoinColumns = @JoinColumn(name = "couple_text_id")
-//    )
     private List<CoupleText> couples= new ArrayList<>();
     @ManyToOne
     private Annotateur annotateur;

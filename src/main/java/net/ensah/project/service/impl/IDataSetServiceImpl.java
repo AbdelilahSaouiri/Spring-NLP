@@ -13,7 +13,6 @@ import net.ensah.project.utils.CSV;
 import net.ensah.project.utils.PasswordGenerator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +40,9 @@ public class IDataSetServiceImpl implements IDataSetService {
          private final AnnotateurRepository annotateurRepository;
          private final PasswordEncoder passwordEncoder;
          private final RoleRepository roleRepository;
+         private final AnnotationRepository annotationRepository;
 
-    public IDataSetServiceImpl(DataSetRepository dataRepo, ClasseRepository classRepo, CoupleTextRepository coupleTextRepo, TacheRepository taskRepo, AnnotateurRepository annotateurRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public IDataSetServiceImpl(DataSetRepository dataRepo, ClasseRepository classRepo, CoupleTextRepository coupleTextRepo, TacheRepository taskRepo, AnnotateurRepository annotateurRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository, AnnotationRepository annotationRepository) {
             this.dataRepo = dataRepo;
             this.classRepo = classRepo;
             this.coupleTextRepo = coupleTextRepo;
@@ -50,6 +50,7 @@ public class IDataSetServiceImpl implements IDataSetService {
             this.annotateurRepository = annotateurRepository;
             this.passwordEncoder = passwordEncoder;
             this.roleRepository = roleRepository;
+            this.annotationRepository = annotationRepository;
     }
 
     @Override
@@ -101,13 +102,37 @@ public class IDataSetServiceImpl implements IDataSetService {
 
     @Override
     public List<DataSet> getAllDataSet() {
-            return dataRepo.findAll();
+        return dataRepo.findAll();
     }
+
+    @Override
+    public double calculateAvancement(DataSet dataSet) {
+        List<CoupleText> couples = dataSet.getCouples();
+        int total = couples.size();
+        long annotes = couples.stream()
+                .filter(c -> c.getAnnotations() != null && !c.getAnnotations().isEmpty())
+                .count();
+        return total == 0 ? 0 : (annotes * 100.0) / total;
+    }
+
+    @Override
+    public List<Double> calculateAvancementforEachDataSet(List<DataSet> all) {
+        return   all.stream()
+                .map(dataSet -> {
+                    List<CoupleText> couples = dataSet.getCouples();
+                    int total = couples.size();
+                    long annots = couples.stream()
+                            .filter(c -> c.getAnnotations() != null && !c.getAnnotations().isEmpty())
+                            .count();
+                    return total == 0 ? 0.0 : (annots * 100.0) / total;
+                })
+                .toList();
+    }
+
 
     @Override
     public Page<CoupleText> getDetails(Long id, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-
         return coupleTextRepo.findByDataSet_Id(id, pageRequest);
 
     }
@@ -244,6 +269,7 @@ public class IDataSetServiceImpl implements IDataSetService {
     public List<Annotateur> getAllAnnotateursWithoutFilter() {
         return annotateurRepository.findAll();
     }
+
 
 
 }
