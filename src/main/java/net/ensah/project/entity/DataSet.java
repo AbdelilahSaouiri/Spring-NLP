@@ -7,7 +7,7 @@ import java.util.List;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor @Getter
-@Setter @Builder @ToString
+@Setter @Builder
 public class DataSet {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

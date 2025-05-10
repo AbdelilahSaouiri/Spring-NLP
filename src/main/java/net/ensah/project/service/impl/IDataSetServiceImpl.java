@@ -13,6 +13,7 @@ import net.ensah.project.utils.CSV;
 import net.ensah.project.utils.PasswordGenerator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +40,7 @@ public class IDataSetServiceImpl implements IDataSetService {
          private final TacheRepository taskRepo;
          private final AnnotateurRepository annotateurRepository;
          private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
+         private final RoleRepository roleRepository;
 
     public IDataSetServiceImpl(DataSetRepository dataRepo, ClasseRepository classRepo, CoupleTextRepository coupleTextRepo, TacheRepository taskRepo, AnnotateurRepository annotateurRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
             this.dataRepo = dataRepo;
@@ -48,7 +49,7 @@ public class IDataSetServiceImpl implements IDataSetService {
             this.taskRepo = taskRepo;
             this.annotateurRepository = annotateurRepository;
             this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
+            this.roleRepository = roleRepository;
     }
 
     @Override
@@ -138,6 +139,8 @@ public class IDataSetServiceImpl implements IDataSetService {
     public void affecterAnnotateursToDataset(List<Long> ids, Long dataSetId) {
         DataSet dataSet = dataRepo.findById(dataSetId).orElse(null);
         List<Tache> tasks= new ArrayList<>();
+        List<CoupleText> couples=dataSet.getCouples();
+        log.info("couples size: " + couples.size());
         for (Long id : ids) {
             Annotateur annotateur = annotateurRepository.findById(id).orElse(null);
             Tache tache= new Tache();
@@ -145,8 +148,10 @@ public class IDataSetServiceImpl implements IDataSetService {
             tache.setAnnotateur(annotateur);
             tache.setDataset(dataSet);
             tache.setDate(LocalDate.now().plusDays(2));
-            if(!tache.getDataset().getId().equals(dataSetId)){
+            if(!tache.getDataset().getId().equals(dataSetId)) {
                 tache.setCouples(dataSet.getCouples());
+            }else{
+                tache.getCouples().addAll(dataSet.getCouples());
             }
             annotateur.getTaches().add(tache);
             annotateur.getAnnotations().add(null);
@@ -158,9 +163,19 @@ public class IDataSetServiceImpl implements IDataSetService {
              dataSet.setTasks(tasks);
            }else{
              dataSet.getTasks().addAll(tasks);
-
           }
-           dataRepo.save(dataSet);
+          dataRepo.save(dataSet);
+         if (couples != null) {
+            for (CoupleText c : couples) {
+                if (c.getTasks() == null) {
+                    c.setTasks(tasks);
+                }else{
+                    c.getTasks().addAll(tasks);
+                }
+                coupleTextRepo.save(c);
+            }
+        }
+
     }
 
     @Override

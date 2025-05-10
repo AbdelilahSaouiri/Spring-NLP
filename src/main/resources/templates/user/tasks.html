@@ -28,7 +28,7 @@
                     <td th:text="${task.date}"></td>
                     <td>75%</td>
                     <td th:text="${task.dataset.nbrlignes}"></td>
-                    <td><a th:href="@{/annotation/work}" class="btn btn-sm btn-primary">Travailler</a></td>
+                    <td><a th:href="@{/annotation/work(id=${task.id})}" class="btn btn-sm btn-primary">Travailler</a></td>
                 </tr>
                 </tbody>
             </table>

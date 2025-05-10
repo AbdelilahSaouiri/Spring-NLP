@@ -7,10 +7,12 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor @NoArgsConstructor  @Getter @Setter @ToString
+@AllArgsConstructor @NoArgsConstructor  @Getter @Setter
 public class Annotateur extends Utilisateur {
     @OneToMany(mappedBy = "annotateur")
      private List<Tache>  taches ;
     @OneToMany
     private List<Annotation> annotations;
+
+
 }

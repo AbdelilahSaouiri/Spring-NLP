@@ -1,12 +1,10 @@
 package net.ensah.project.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,12 +16,12 @@ public class Tache {
     @ManyToOne(fetch = FetchType.LAZY)
     private DataSet dataset;
     @ManyToMany
-    @JoinTable(
-            name = "tache_couple_text",
-            joinColumns = @JoinColumn(name = "tache_id"),
-            inverseJoinColumns = @JoinColumn(name = "couple_text_id")
-    )
-    private List<CoupleText> couples;
+//    @JoinTable(
+//            name = "tache_couple_text",
+//            joinColumns = @JoinColumn(name = "tache_id"),
+//            inverseJoinColumns = @JoinColumn(name = "couple_text_id")
+//    )
+    private List<CoupleText> couples= new ArrayList<>();
     @ManyToOne
     private Annotateur annotateur;
 }

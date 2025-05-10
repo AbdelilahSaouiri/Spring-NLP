@@ -7,6 +7,78 @@
     <title>Work</title>
 </head>
 <body>
+<div layout:fragment="content">
+    <div class="container">
+        <h2>Travailler une tâche</h2>
+        <p><strong>Id couple:</strong> <span th:text="${couple.id}">30</span></p>
+        <p><strong>Description:</strong>
+            <span th:text="${task.dataset.description}"></span>
+        </p>
 
+        <div>
+            <label for="text1"><strong>Texte 1:</strong></label>
+            <textarea id="text1" class="form-control" rows="4" readonly
+                      th:text="${couple.text1}">Texte 1 ici…</textarea>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <label for="text2"><strong>Texte 2:</strong></label>
+            <textarea id="text2" class="form-control" rows="4" readonly
+                      th:text="${couple.text2}">Texte 2 ici…</textarea>
+        </div>
+
+        <!-- Si déjà annoté par n’importe qui -->
+        <div th:if="${alreadyAnnotated}" style="margin-top:20px;">
+            <div class="alert alert-info">
+                Cette paire a déjà été annotée par un autre annotateur.
+            </div>
+            <div>
+                <a th:href="@{/annotation/work(id=${task.id}, index=${index - 1})}"
+                   class="btn btn-secondary"
+                   th:if="${index > 0}">&laquo; Précédent</a>
+                <a th:href="@{/annotation/work(id=${task.id}, index=${index + 1})}"
+                   class="btn btn-secondary"
+                   th:if="${index < maxIndex}">Suivant &raquo;</a>
+            </div>
+        </div>
+
+        <!-- Formulaire d’annotation -->
+        <form th:if="${!alreadyAnnotated}"
+              id="validationForm"
+              method="post"
+              th:action="@{/annotation/task/validate}"
+              style="margin-top:20px;">
+
+            <!-- Hidden inputs -->
+            <input type="hidden" name="taskId"   th:value="${task.id}"/>
+            <input type="hidden" name="coupleId"  th:value="${couple.id}"/>
+            <input type="hidden" name="index"     th:value="${index}"/>
+
+            <!-- Radios Similarité -->
+            <div>
+                <input type="radio" id="notSimilar"
+                       name="similarity" value="NOT_SIMILAR"/>
+                <label for="notSimilar">Pas similaire</label>
+
+                <input type="radio" id="similar"
+                       name="similarity" value="SIMILAR"/>
+                <label for="similar">Similaire</label>
+            </div>
+
+            <!-- Boutons -->
+            <div style="margin-top:20px;">
+                <button type="submit" class="btn btn-primary">Valider</button>
+
+                <a th:href="@{/annotation/work(id=${task.id}, index=${index - 1})}"
+                   class="btn btn-secondary"
+                   th:if="${index > 0}">&laquo; Précédent</a>
+
+                <a th:href="@{/annotation/work(id=${task.id}, index=${index + 1})}"
+                   class="btn btn-secondary"
+                   th:if="${index < maxIndex}">Suivant &raquo;</a>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

@@ -1,11 +1,9 @@
 package net.ensah.project.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,6 +17,6 @@ public class CoupleText {
     private List<Tache> tasks;
     @ManyToOne
     private DataSet dataSet;
-   @OneToMany
-    private List<Annotation>  annotations;
+   @OneToMany(mappedBy = "couple")
+    private List<Annotation>  annotations= new ArrayList<>();
 }

@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CoupleTextRepository extends JpaRepository<CoupleText,Long> {
 
     Page<CoupleText> findByDataSet_Id(Long datasetId, Pageable pageable);
+
+
 }
