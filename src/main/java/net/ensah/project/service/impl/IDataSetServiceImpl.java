@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -157,7 +156,9 @@ public class IDataSetServiceImpl implements IDataSetService {
 
     @Override
     public List<Annotateur> getAllAnnotateurs() {
-           return annotateurRepository.findAll().stream().filter(an->!an.isEnabled()).collect(Collectors.toList());
+        return annotateurRepository.findAll().stream()
+                .filter(an-> !an.isEnabled())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -203,13 +204,10 @@ public class IDataSetServiceImpl implements IDataSetService {
     }
 
     @Override
-    public void supprimerAnnotateur(Long dataSetId, Long id) {
-        Annotateur annotateur=annotateurRepository.findById(id).orElse(null);
-        annotateur.getTaches().remove(annotateur);
-        Tache task = taskRepo.findByAnnotateur(annotateur);
-        task.setAnnotateur(null);
-        taskRepo.save(task);
-        annotateurRepository.save(annotateur);
+    public void supprimerAnnotateur(Long id) {
+        Annotateur annotateur = annotateurRepository.findById(id).orElse(null);
+         annotateur.setEnabled(true);
+         annotateurRepository.save(annotateur);
     }
 
     @Override

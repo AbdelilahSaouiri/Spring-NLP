@@ -29,7 +29,7 @@ public interface IDataSetService {
 
     void affecterAnnotateursToDataset(List<Long> ids, Long dataSetId);
 
-    void supprimerAnnotateur(Long dataSetId, Long id);
+    void supprimerAnnotateur(Long id);
 
     String saveNewAnnotateur(AnnotateurDtoRequest request);
 

@@ -15,7 +15,7 @@ public interface TacheRepository extends JpaRepository<Tache, Long> {
 
        Tache findTacheByDataset_Id(Long id);
 
-       Tache findByAnnotateur(Annotateur annotateur);
+       List<Tache> findByAnnotateur(Annotateur annotateur);
 
        @Query("SELECT t FROM Tache t LEFT JOIN FETCH t.couples WHERE t.id = :id")
        Optional<Tache> findWithCouplesById(@Param("id") Long id);

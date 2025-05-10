@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Controller
@@ -106,13 +105,13 @@ public class DataSetController {
             @RequestParam("annotateurId") Long id,
             @RequestParam(value = "page", defaultValue = "0") int page
     ) {
-        service.supprimerAnnotateur(dataSetId, id);
+        service.supprimerAnnotateur(dataSetId);
         return "redirect:/admin/details?id=" + dataSetId + "&page=" + page + "&size=10";
     }
 
     @GetMapping("/annotateurs")
     public String annotateurs(Model model) {
-        List<Annotateur> allAnnotateurs = service.getAllAnnotateursWithoutFilter();
+        List<Annotateur> allAnnotateurs = service.getAllAnnotateurs();
         model.addAttribute("annotateursList", allAnnotateurs);
         return "admin/annotateurs";
     }
@@ -144,7 +143,7 @@ public class DataSetController {
     @PostMapping("/annotateurs/delete")
     public String deleteAnnotateur(@RequestParam(name = "id") Long id) {
         log.info("deleteAnnotateur {}", id);
-        service.supprimerAnnotateur(0L, id);
+        service.supprimerAnnotateur(id);
         return "redirect:/admin/annotateurs";
     }
 
