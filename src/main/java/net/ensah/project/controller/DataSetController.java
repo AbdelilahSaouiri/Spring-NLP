@@ -82,15 +82,18 @@ public class DataSetController {
     @GetMapping("/add-annotators")
     public String addAnnotateur(@RequestParam(name = "id") Long id, Model model) {
         List<Annotateur> allAnnotateurs = service.getAllAnnotateurs();
+        List<Annotateur> assignedAnnotateurs = service.getAnnotateursByDataSetId(id);
         model.addAttribute("annotateurs", allAnnotateurs);
+        model.addAttribute("assignedAnnotateurs",assignedAnnotateurs);
         model.addAttribute("dataSetId", id);
         return "admin/affecter-annotateur";
     }
 
     @PostMapping("/affecter-annotateurs")
     public String affecterAnnotateurToDataset(
-            @RequestParam("ids") List<Long> ids,
-            @RequestParam("dataId") Long dataSetId) {
+            @RequestParam(value = "ids") List<Long> ids,
+            @RequestParam("dataId") Long dataSetId
+            ) {
         log.info("dataset id {}", dataSetId);
         log.info("ids {}", ids);
         service.affecterAnnotateursToDataset(ids, dataSetId);

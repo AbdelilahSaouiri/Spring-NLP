@@ -24,7 +24,8 @@
                 <td th:text="${annotateur.prenom + ' ' + annotateur.nom}">Nom Prénom</td>
                 <td>
                     <label>
-                        <input type="checkbox" name="ids" th:value="${annotateur.id}"/>
+                        <input type="checkbox" name="ids" th:value="${annotateur.id}"
+                               th:checked="${assignedAnnotateurs.contains(annotateur)}"/>
                     </label>
                 </td>
             </tr>

@@ -5,6 +5,7 @@ import jakarta.persistence.OneToMany;
 import lombok.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor  @Getter @Setter
@@ -13,6 +14,5 @@ public class Annotateur extends Utilisateur {
      private List<Tache>  taches ;
     @OneToMany
     private List<Annotation> annotations;
-
 
 }

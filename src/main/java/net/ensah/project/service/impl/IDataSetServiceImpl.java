@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -129,7 +130,6 @@ public class IDataSetServiceImpl implements IDataSetService {
                 .toList();
     }
 
-
     @Override
     public Page<CoupleText> getDetails(Long id, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -169,7 +169,6 @@ public class IDataSetServiceImpl implements IDataSetService {
         for (Long id : ids) {
             Annotateur annotateur = annotateurRepository.findById(id).orElse(null);
             Tache tache= new Tache();
-            tache.setId(null);
             tache.setAnnotateur(annotateur);
             tache.setDataset(dataSet);
             tache.setDate(LocalDate.now().plusDays(2));
