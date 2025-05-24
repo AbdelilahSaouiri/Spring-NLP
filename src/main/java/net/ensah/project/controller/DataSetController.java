@@ -105,7 +105,7 @@ public class DataSetController {
             @RequestParam("annotateurId") Long id,
             @RequestParam(value = "page", defaultValue = "0") int page
     ) {
-        service.supprimerAnnotateur(dataSetId);
+        service.supprimerAnnotateurFromDataSet(dataSetId,id);
         return "redirect:/admin/details?id=" + dataSetId + "&page=" + page + "&size=10";
     }
 

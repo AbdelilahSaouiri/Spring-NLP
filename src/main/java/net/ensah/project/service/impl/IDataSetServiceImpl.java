@@ -11,6 +11,7 @@ import net.ensah.project.repository.*;
 import net.ensah.project.service.IDataSetService;
 import net.ensah.project.utils.CSV;
 import net.ensah.project.utils.PasswordGenerator;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -55,50 +57,81 @@ public class IDataSetServiceImpl implements IDataSetService {
 
     @Override
     public void isSupportedFile(DataSetDto request) {
-         if(request.file().isEmpty()) {
-              throw new InvalidFileException("Fichier vide.");
-         }else{
-             var contentType = request.file().getContentType();
-             var fileName = request.file().getOriginalFilename();
-             boolean supported = CSV.isSupported(contentType, fileName);
-             String[] split = request.classes().split(";");
-             if(!supported) {
-                 throw new InvalidFileException("Type de fichier non supporté.");
-             }
-             else {
+        if (request.file().isEmpty()) {
+            throw new InvalidFileException("Fichier vide.");
+        } else {
+            var contentType = request.file().getContentType();
+            var fileName = request.file().getOriginalFilename();
+            boolean supported = CSV.isSupported(contentType, fileName);
+            String[] split = request.classes().split(";");
 
-                 DataSet dataSet = new DataSet();
-                 dataSet.setNom(request.name());
-                 dataSet.setDescription(request.description());
-                 List<CoupleText> couples = new ArrayList<>();
-                 int nbr=0;
-                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(request.file().getInputStream(), StandardCharsets.UTF_8))) {
-                     String line;
-                     while ((line = reader.readLine()) != null) {
-                         String[] parts = line.split(",");
-                         if (parts.length >= 2) {
-                             CoupleText couple = new CoupleText();
-                             couple.setText1(parts[0].trim());
-                             couple.setText2(parts[1].trim());
-                             couple.setDataSet(dataSet);
-                             nbr++;
-                             couples.add(couple);
-                         }
-                     }
-                 } catch (IOException e) {
-                     throw new RuntimeException(e);
-                 }
-                 coupleTextRepo.saveAll(couples);
-                 dataSet.setCouples(couples);
-                 dataSet.setNbrlignes(nbr);
-                 dataSet.setTasks(new ArrayList<>());
-                 List<ClassePossible> collect = Arrays.stream(split).map(s -> new ClassePossible(null, dataSet, s)).collect(Collectors.toList());
-                 classRepo.saveAll(collect);
-                 dataSet.setClasses(collect);
-                 dataRepo.save(dataSet);
-             }
-         }
+            if (!supported) {
+                throw new InvalidFileException("Type de fichier non supporté.");
+            } else {
+                DataSet dataSet = new DataSet();
+                dataSet.setNom(request.name());
+                dataSet.setDescription(request.description());
+                List<CoupleText> couples = new ArrayList<>();
+                int nbr = 0;
+
+                try {
+                    if (fileName.endsWith(".csv")) {
+                        try (BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(request.file().getInputStream(), StandardCharsets.UTF_8))) {
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                String[] parts = line.split(",");
+                                if (parts.length >= 2) {
+                                    CoupleText couple = new CoupleText();
+                                    couple.setText1(parts[0].trim());
+                                    couple.setText2(parts[1].trim());
+                                    couple.setDataSet(dataSet);
+                                    couples.add(couple);
+                                    nbr++;
+                                }
+                            }
+                        }
+                    } else if (fileName.endsWith(".xlsx")) {
+                        try (InputStream inputStream = request.file().getInputStream();
+                             Workbook workbook = WorkbookFactory.create(inputStream)) {
+                            Sheet sheet = workbook.getSheetAt(0);
+                            for (Row row : sheet) {
+                                Cell cell1 = row.getCell(0);
+                                Cell cell2 = row.getCell(1);
+                                if (cell1 != null && cell2 != null) {
+                                    String text1 = cell1.toString().trim();
+                                    String text2 = cell2.toString().trim();
+                                    CoupleText couple = new CoupleText();
+                                    couple.setText1(text1);
+                                    couple.setText2(text2);
+                                    couple.setDataSet(dataSet);
+                                    couples.add(couple);
+                                    nbr++;
+                                }
+                            }
+                        }
+                    } else {
+                        throw new InvalidFileException("Type de fichier non supporté.");
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Erreur lors de la lecture du fichier.", e);
+                }
+
+                coupleTextRepo.saveAll(couples);
+                dataSet.setCouples(couples);
+                dataSet.setNbrlignes(nbr);
+                dataSet.setTasks(new ArrayList<>());
+
+                List<ClassePossible> collect = Arrays.stream(split)
+                        .map(s -> new ClassePossible(null, dataSet, s))
+                        .collect(Collectors.toList());
+                classRepo.saveAll(collect);
+                dataSet.setClasses(collect);
+                dataRepo.save(dataSet);
+            }
+        }
     }
+
 
     @Override
     public List<DataSet> getAllDataSet() {
@@ -130,6 +163,20 @@ public class IDataSetServiceImpl implements IDataSetService {
     }
 
     @Override
+    public void supprimerAnnotateurFromDataSet(Long dataSetId,Long id) {
+        Annotateur annotateur=annotateurRepository.findById(id).orElse(null);
+        List<Tache> taches = annotateur.getTaches();
+        if(taches.isEmpty()){
+            annotateur.setEnabled(false);
+        }
+        Tache task = taskRepo.findByAnnotateur(annotateur);
+        task.setAnnotateur(null);
+        taskRepo.save(task);
+        annotateurRepository.save(annotateur);
+    }
+
+
+    @Override
     public Page<CoupleText> getDetails(Long id, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return coupleTextRepo.findByDataSet_Id(id, pageRequest);
@@ -156,9 +203,10 @@ public class IDataSetServiceImpl implements IDataSetService {
 
     @Override
     public List<Annotateur> getAllAnnotateurs() {
-        return annotateurRepository.findAll().stream()
-                .filter(an-> !an.isEnabled())
-                .collect(Collectors.toList());
+//        return annotateurRepository.findAll().stream()
+//                .filter(an-> !an.isEnabled())
+//                .collect(Collectors.toList());
+        return  annotateurRepository.findAll();
     }
 
     @Override

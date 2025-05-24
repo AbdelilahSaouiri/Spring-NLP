@@ -44,4 +44,5 @@ public interface IDataSetService {
 
     List<Double> calculateAvancementforEachDataSet(List<DataSet> all);
 
+    void supprimerAnnotateurFromDataSet(Long dataSetId, Long id);
 }

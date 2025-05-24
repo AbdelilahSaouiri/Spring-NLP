@@ -10,6 +10,6 @@ import java.util.List;
 public interface AnnotateurRepository extends JpaRepository<Annotateur, Long> {
 
 
-    List<Annotateur>   findByTachesIn(List<Tache> taches);
+    List<Annotateur>  findByTachesIn(List<Tache> taches);
     Annotateur    findByLogin(String nom);
 }

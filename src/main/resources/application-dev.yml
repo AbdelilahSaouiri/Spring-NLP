@@ -1,14 +1,20 @@
 spring:
   jpa:
     generate-ddl: true
+    hibernate:
+      ddl-auto: create
   datasource:
-    url: jdbc:h2:mem:nlp
-  h2:
-    console:
-      enabled: true
+    url: jdbc:mariadb://localhost:3306/nlp
+    username: abdelilah
+    password: 1234
+    driver-class-name: org.mariadb.jdbc.Driver
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  docker:
+    compose:
+      lifecycle-management: start_only
+
 server:
   port: 8085
